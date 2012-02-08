@@ -22,6 +22,8 @@ class Application(tornado.web.Application):
             cookie_secret="43oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=os.path.join(os.path.dirname(__file__), "assets"),
+            facebook_api_id="343864215644943",
+            facebook_api_secret="7fc83e7cfeaf584c338eb2e07f30021a",
             xsrf_cookies=True,
             autoescape=None,
         )
@@ -37,9 +39,15 @@ class OpenGraphHandler(tornado.web.RequestHandler):
         query = self.get_argument("query")
         result = ""
         if query != "":
-            req = urllib2.Request("https://graph.facebook.com/search?q=" + 
-                                  query + 
-                                  "&type=post&access_token=AAAAAAITEghMBAHin0WyVzppnZAzZAVgfzpvgrhaO8tazZBG1fxTU9erWwiwJOJ5uC0sJUzBHsJe942bMQfErtASGTDyTBVlrkHnEg6dXwZDZD")
+            token_req = urllib2.Request("https://graph.facebook.com/oauth/access_token?client_id=" + 
+                                        self.settings['facebook_api_id'] + 
+                                        "&client_secret=" + 
+                                        self.settings['facebook_api_secret'] + 
+                                        "&grant_type=client_credentials")
+            access_token = urllib2.urlopen(token_req).read()
+
+            graph_query_url = "https://graph.facebook.com/search?q=" + query + "&type=post&access_token=" + access_token
+            req = urllib2.Request("https://graph.facebook.com/search?q=" + query + "&type=post&" + access_token)
             result = urllib2.urlopen(req).read()
         self.finish(result)
 

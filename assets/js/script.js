@@ -11,7 +11,7 @@
             $("#bayes").html("<h2>Pay no attention to the man behind the curtain...</h2>");
             $("#bayes").fadeIn("normal");
             $.get("/OpenGraphQuery",
-                {"query": $.trim(this.value) },
+                {"query": escape($.trim(this.value)) },
                 function(data) {
                     self.value = '';
                     console.log(data);
