@@ -11,6 +11,7 @@ import urllib2
 from tornado.options import define, options
 
 define("port", default=8888, help="run on the given port", type=int)
+define("debug", default=false, help="if the server should be run in debug mode", type=bool)
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -26,6 +27,7 @@ class Application(tornado.web.Application):
             facebook_api_secret="7fc83e7cfeaf584c338eb2e07f30021a",
             xsrf_cookies=True,
             autoescape=None,
+            debug=options.debug
         )
         tornado.web.Application.__init__(self, handlers, **settings)
 
@@ -45,6 +47,7 @@ class OpenGraphHandler(tornado.web.RequestHandler):
                                         self.settings['facebook_api_secret'] + 
                                         "&grant_type=client_credentials")
             access_token = urllib2.urlopen(token_req).read()
+            logging.info(access_token)
 
             graph_query_url = "https://graph.facebook.com/search?q=" + query + "&type=post&access_token=" + access_token
             req = urllib2.Request("https://graph.facebook.com/search?q=" + query + "&type=post&" + access_token)
