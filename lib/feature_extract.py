@@ -1,27 +1,24 @@
 #!/usr/bin/env python
 
-import os
-import subprocess
-import wave
-import struct
-import numpy
-import csv
-import sys
+import os, subprocess, wave, struct, numpy, csv, sys
 
+# TODO: Test to differentiate between two super genres
+# TODO: Use Netica to construct a model based on the features
+
+# Returns two chunks of sound data from wave file.
 def read_wav(wav_file):
-    """Returns two chunks of sound data from wave file."""
     w = wave.open(wav_file)
     n = 30 * 10000
     if w.getnframes() < n * 2:
         raise ValueError('Wave file too short')
-    frames = w.readframes(n/2)
-    wav_data1 = struct.unpack('%dh' % n, frames)
-    frames = w.readframes(n/2)
-    wav_data2 = struct.unpack('%dh' % n, frames)
+    frames = w.readframes(n)
+    wav_data1 = struct.unpack('%dh' % n*2, frames)
+    frames = w.readframes(n)
+    wav_data2 = struct.unpack('%dh' % n*2, frames)
     return wav_data1, wav_data2
 
+# Return feature vectors for two chunks of an M4A file.
 def compute_chunk_features(in_file):
-    """Return feature vectors for two chunks of an M4A file."""
     # Extract M4A file to a WAV file
     # Don't have this on a Mac, so instead used afconvert
     #mpg123_command = 'C:\\mpg123-1.12.3-x86-64\\mpg123.exe -w "%s" -r 10000 -m "%s"'
@@ -29,10 +26,10 @@ def compute_chunk_features(in_file):
     out_file = '/Users/Atta/Desktop/temp.wav'
     #cmd = afconvert_command % (in_file, out_file)
     #print cmd
-    #temp = subprocess.call(cmd)
+    #temp = subprocess.call(cmd)]
     # Read in chunks of data from WAV file
-    wav_data1, wav_data2 = read_wav(out_file)
-    return features(wav_data1), features(wav_data2)
+    wav_data1, wav_data2 = read_wav(out_file)]
+    return features(wav_data1), features(wav_data2)]
 
 def moments(x):
     mean = x.mean()
