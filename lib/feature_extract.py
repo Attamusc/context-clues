@@ -8,7 +8,7 @@ import os, subprocess, wave, struct, numpy, csv, sys
 # Returns two chunks of sound data from wave file.
 def read_wav(wav_file):
     w = wave.open(wav_file)
-    n = 30 * 10000
+    n = 60 * 10000
     if w.getnframes() < n * 2:
         raise ValueError('Wave file too short')
     frames = w.readframes(n)
@@ -22,14 +22,14 @@ def compute_chunk_features(in_file):
     # Extract M4A file to a WAV file
     # Don't have this on a Mac, so instead used afconvert
     #mpg123_command = 'C:\\mpg123-1.12.3-x86-64\\mpg123.exe -w "%s" -r 10000 -m "%s"'
-    #afconvert_command = '/usr/bin/afconvert -f \'WAVE\' -d I16@44100 %s %s'
-    out_file = '/Users/Atta/Desktop/temp.wav'
+    #afconvert_command = '/usr/bin/afconvert -f \'WAVE\' -d I16@10000 %s %s'
+    out_file = '/Users/Atta/Desktop/output.wav'
     #cmd = afconvert_command % (in_file, out_file)
     #print cmd
-    #temp = subprocess.call(cmd)]
+    #temp = subprocess.call(cmd)
     # Read in chunks of data from WAV file
-    wav_data1, wav_data2 = read_wav(out_file)]
-    return features(wav_data1), features(wav_data2)]
+    wav_data1, wav_data2 = read_wav(out_file)
+    return features(wav_data1), features(wav_data2)
 
 def moments(x):
     mean = x.mean()
