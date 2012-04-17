@@ -48,20 +48,19 @@
 
 import os, subprocess, wave, struct, numpy, csv, sys
 
-def strip(filepath):
-    feature_vec1, feature_vec2 = compute_chunk_features(filepath)
+def strip(filepath, basepath="/tmp"):
+    feature_vec1, feature_vec2 = compute_chunk_features(os.path.join(basepath, filepath), basepath)
     return feature_vec1, feature_vec2
 
 # Return feature vectors for two chunks of an M4A file.
-def compute_chunk_features(in_file):
+def compute_chunk_features(in_file, basepath):
     # Extract M4A file to a WAV file
     # Don't have this on a Mac, so instead used afconvert
     #mpg123_command = 'C:\\mpg123-1.12.3-x86-64\\mpg123.exe -w "%s" -r 10000 -m "%s"'
-    afconvert_command = 'afconvert -f \'WAVE\' -d I16@10000 %s %s'
-    out_file = '/tmp/output.wav'.format()
+    afconvert_command = 'afconvert -f \'WAVE\' -d I16@10000 \'%s\' \'%s\''
+    out_file = os.path.join(basepath, 'output.wav')
     cmd = afconvert_command % (in_file, out_file)
-    #print cmd
-    temp = run_bash('afconvert -f \'WAVE\' -d I16@10000 /tmp/test.m4a /tmp/output.wav')
+    temp = run_bash(cmd)
     # Read in chunks of data from WAV file
     wav_data1, wav_data2 = read_wav(out_file)
     return features(wav_data1), features(wav_data2)

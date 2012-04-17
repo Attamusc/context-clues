@@ -48,7 +48,7 @@ class MainHandler(tornado.web.RequestHandler):
 class FeatureStripHandler(tornado.web.RequestHandler):
     def get(self):
         filename = self.get_argument("filename", None)
-        f1, f2 = features.strip('/tmp/{0}'.format(filename))
+        f1, f2 = features.strip(filename)
         print f1
         print f2
         self.application.db.execute(
@@ -58,7 +58,7 @@ class FeatureStripHandler(tornado.web.RequestHandler):
                                   "amp100dskew,amp100dkurt,amp1000mean,amp1000std,amp1000skew,amp1000kurt,amp1000dmean,"
                                   "amp1000dstd,amp1000dskew,amp1000dkurt,power1,power2,power3,power4,power5,power6,power7,power8,power9,power10)"
             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-            "output", 2, *f1)
+            filename, "null", *f1)
         self.write ("A-Ok! :)")
 
 def main():
