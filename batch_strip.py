@@ -6,6 +6,7 @@ import features
 
 def main():
     print "Beginning feature strip"
+    song_count = dict()
     db = MySQLdb.connect(host="localhost", user="root", passwd="", db="genrebot")
     cursor = db.cursor()
     basepath = "/Users/Atta/Desktop/songs/"
@@ -14,12 +15,14 @@ def main():
         print "---NOW STARTING {0} SONGS---".format(genre.upper())
         # Get the id in the db for the genre
         cursor.execute("""Select id from Genres where name = %s""", (genre))
+        song_count[genre] = 0
         genre_id = cursor.fetchone()[0]
         genre_path = os.path.join(basepath, genre)
         genre_dir = os.listdir(genre_path)
         for song in genre_dir:
-            # Remove the .DS_Store file and out special output.wav file, Quick and Dirty style
+            # Remove the .DS_Store file and our special output.wav file, Quick and Dirty style
             if (song != ".DS_Store" and song != "output.wav"):
+                song_count[genre] += 1 
                 print "Current Song is: " + os.path.join(genre_path, song)
                 f1, f2 = features.strip(os.path.join(genre_path, song), genre_path)
                 # Add ALL the features to the database!
@@ -39,6 +42,9 @@ def main():
                                 (song, genre_id) + tuple(f2))
                 print "Finished!"
     print "All done!"
+    print "Total Song Counts:"
+    for genre in song_count:
+        print "{0} Songs: {1}".format(genre.upper(), song_count[genre])
 
 if __name__ == "__main__":
     main()
