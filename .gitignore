@@ -1,4 +1,5 @@
 cc-tornado
+lib/
 *.py[co]
 
 # Packages

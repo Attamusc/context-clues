@@ -2,15 +2,16 @@
 
 import logging
 import tornado.escape
-import tornado.database
 import tornado.ioloop
 import tornado.options
 import tornado.web
 import os.path
 import urllib2
 import features
+import subprocess
+import re
 
-import logging  
+import logging
 from tornado.options import define, options
 
 define("port", default=8888, help="run on the given port", type=int)
@@ -50,20 +51,37 @@ class FeatureStripHandler(tornado.web.RequestHandler):
     def get(self):
         filename = self.get_argument("filename", None)
         f1, f2 = features.strip(filename)
-        feature_names = ['title','genre','amp1mean','amp1std','amp1skew',
-                         'amp1kurt','amp1dmean','amp1dstd','amp1dskew',
-                         'amp1dkurt','amp10mean','amp10std','amp10skew',
-                         'amp10kurt','amp10dmean','amp10dstd','amp10dskew',
-                         'amp10dkurt','amp100mean','amp100std','amp100skew',
-                         'amp100kurt','amp100dmean','amp100dstd','amp100dskew',
-                         'amp100dkurt','amp1000mean','amp1000std','amp1000skew',
-                         'amp1000kurt','amp1000dmean','amp1000dstd','amp1000dskew',
-                         'amp1000dkurt','power1','power2','power3','power4',
-                         'power5','power6','power7','power8','power9','power10']
+        feature_names = ['amp1mean','amp1std','amp1skew','amp1kurt',
+                         'amp1dmean','amp1dstd','amp1dskew','amp1dkurt',
+                         'amp10mean','amp10std','amp10skew','amp10kurt',
+                         'amp10dmean','amp10dstd','amp10dskew','amp10dkurt',
+                         'amp100mean','amp100std','amp100skew','amp100kurt',
+                         'amp100dmean','amp100dstd','amp100dskew','amp100dkurt',
+                         'amp1000mean','amp1000std','amp1000skew','amp1000kurt',
+                         'amp1000dmean','amp1000dstd','amp1000dskew','amp1000dkurt',
+                         'power1','power2','power3','power4','power5',
+                         'power6','power7','power8','power9','power10']
         f1_json = zip(feature_names, f1)
         f2_json = zip(feature_names, f2)
-        json_response = dict(f1=dict(f1_json), f2=dict(f2_json))
-        self.write (json_response)
+        json_dict = tornado.escape.json_encode(dict(f1=dict(f1_json), f2=dict(f2_json)))
+
+        # Sooooo not the best - or even a good - way to do this, but it is "A" way...
+        f = open("input.json", "w")
+        f.write(json_dict)
+        f.close()
+        run_bash("""java  -classpath .:lib/NeticaJ.jar:lib/jackson-all-1.9.7.jar -Djava.library.path=lib NetworkFeed""")
+        o = open("output.json", "r")
+        json_output = o.read()
+        o.close()
+
+        print json_output
+
+        self.write (json_output)
+
+def run_bash(cmd):
+    bash = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    output = bash.stdout.read().strip()
+    return output
 
 def main():
     tornado.options.parse_command_line()
