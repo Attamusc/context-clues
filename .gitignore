@@ -2,6 +2,10 @@ cc-tornado
 lib/
 *.py[co]
 
+# Ignore our temp files
+input.json
+output.json
+
 # Packages
 *.egg
 *.egg-info
